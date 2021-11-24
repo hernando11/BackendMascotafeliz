@@ -12,3 +12,8 @@ export * from './proveedor.repository';
 export * from './rol.repository';
 export * from './solicitud.repository';
 export * from './usuario.repository';
+export * from './producto-departamento.repository';
+export * from './producto-ciudad.repository';
+export * from './producto-proveedor.repository';
+export * from './cliente.repository';
+export * from './rol-programa.repository';

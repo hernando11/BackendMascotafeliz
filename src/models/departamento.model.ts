@@ -1,6 +1,8 @@
 import {Entity, model, property, hasMany} from '@loopback/repository';
 import {Ciudad} from './ciudad.model';
 import {Plan} from './plan.model';
+import {Producto} from './producto.model';
+import {ProductoDepartamento} from './producto-departamento.model';
 
 @model()
 export class Departamento extends Entity {
@@ -22,6 +24,9 @@ export class Departamento extends Entity {
 
   @hasMany(() => Plan)
   plans: Plan[];
+
+  @hasMany(() => Producto, {through: {model: () => ProductoDepartamento}})
+  productos: Producto[];
 
   constructor(data?: Partial<Departamento>) {
     super(data);

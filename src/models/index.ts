@@ -12,3 +12,8 @@ export * from './programa.model';
 export * from './permiso.model';
 export * from './rol.model';
 export * from './mascota.model';
+export * from './producto-departamento.model';
+export * from './producto-ciudad.model';
+export * from './producto-proveedor.model';
+export * from './cliente.model';
+export * from './rol-programa.model';

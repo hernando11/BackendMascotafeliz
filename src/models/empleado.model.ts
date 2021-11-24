@@ -1,6 +1,9 @@
-import {Entity, model, property, hasMany} from '@loopback/repository';
+import {Entity, model, property, hasMany, belongsTo} from '@loopback/repository';
 import {Usuario} from './usuario.model';
 import {Plan} from './plan.model';
+import {Producto} from './producto.model';
+import {Solicitud} from './solicitud.model';
+import {Rol} from './rol.model';
 
 @model()
 export class Empleado extends Entity {
@@ -46,6 +49,15 @@ export class Empleado extends Entity {
 
   @hasMany(() => Plan)
   plans: Plan[];
+
+  @hasMany(() => Producto)
+  productos: Producto[];
+
+  @hasMany(() => Solicitud)
+  solicituds: Solicitud[];
+
+  @belongsTo(() => Rol)
+  rolId: string;
 
   constructor(data?: Partial<Empleado>) {
     super(data);
