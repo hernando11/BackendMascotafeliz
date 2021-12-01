@@ -1,8 +1,8 @@
-import {Entity, model, property, belongsTo, hasMany} from '@loopback/repository';
+import {belongsTo, Entity, hasMany, model, property} from '@loopback/repository';
 import {Departamento} from './departamento.model';
 import {Plan} from './plan.model';
-import {Producto} from './producto.model';
 import {ProductoCiudad} from './producto-ciudad.model';
+import {Producto} from './producto.model';
 import {Solicitud} from './solicitud.model';
 
 @model()
@@ -22,7 +22,7 @@ export class Ciudad extends Entity {
 
   @property({
     type: 'string',
-    required: true,
+    required: false,
   })
   idDepartamento: string;
 

@@ -1,6 +1,6 @@
-import {Entity, model, property, belongsTo, hasOne} from '@loopback/repository';
-import {Empleado} from './empleado.model';
+import {belongsTo, Entity, hasOne, model, property} from '@loopback/repository';
 import {Cliente} from './cliente.model';
+import {Empleado} from './empleado.model';
 
 @model()
 export class Usuario extends Entity {
@@ -25,7 +25,7 @@ export class Usuario extends Entity {
 
   @property({
     type: 'string',
-    required: true,
+    required: false,
   })
   documento: string;
 
@@ -37,25 +37,25 @@ export class Usuario extends Entity {
 
   @property({
     type: 'string',
-    required: true,
+    required: false,
   })
   telefono: string;
 
   @property({
     type: 'string',
-    required: true,
+    required: false,
   })
   clave: string;
 
   @property({
     type: 'string',
-    required: true,
+    required: false,
   })
   estado: string;
 
   @property({
     type: 'string',
-    required: true,
+    required: false,
   })
   tipo: string;
 

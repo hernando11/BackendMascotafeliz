@@ -1,30 +1,27 @@
+import {authenticate} from '@loopback/authentication';
 import {
   Count,
   CountSchema,
   Filter,
   FilterExcludingWhere,
   repository,
-  Where,
+  Where
 } from '@loopback/repository';
 import {
-  post,
-  param,
-  get,
-  getModelSchemaRef,
-  patch,
-  put,
-  del,
-  requestBody,
-  response,
+  del, get,
+  getModelSchemaRef, param, patch, post, put, requestBody,
+  response
 } from '@loopback/rest';
 import {Parametro} from '../models';
 import {ParametroRepository} from '../repositories';
 
+@authenticate("administrador")
 export class ParametroController {
   constructor(
     @repository(ParametroRepository)
-    public parametroRepository : ParametroRepository,
-  ) {}
+    public parametroRepository: ParametroRepository,
+  ) { }
+
 
   @post('/parametros')
   @response(200, {
@@ -47,6 +44,7 @@ export class ParametroController {
     return this.parametroRepository.create(parametro);
   }
 
+  @authenticate.skip()
   @get('/parametros/count')
   @response(200, {
     description: 'Parametro model count',

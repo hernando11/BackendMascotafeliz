@@ -17,3 +17,4 @@ export * from './producto-ciudad.model';
 export * from './producto-proveedor.model';
 export * from './cliente.model';
 export * from './rol-programa.model';
+export * from './credenciales.model';
