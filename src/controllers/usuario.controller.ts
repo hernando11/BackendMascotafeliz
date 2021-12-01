@@ -1,30 +1,65 @@
+import {service} from '@loopback/core';
 import {
   Count,
   CountSchema,
   Filter,
   FilterExcludingWhere,
   repository,
-  Where,
+  Where
 } from '@loopback/repository';
 import {
-  post,
-  param,
-  get,
-  getModelSchemaRef,
-  patch,
-  put,
-  del,
-  requestBody,
-  response,
+  del, get,
+  getModelSchemaRef, HttpErrors, param, patch, post, put, requestBody,
+  response
 } from '@loopback/rest';
-import {Usuario} from '../models';
+import {Llaves} from '../config/llaves';
+import {Credenciales, Usuario} from '../models';
 import {UsuarioRepository} from '../repositories';
+import {AutenticacionService} from '../services';
+const fetch = require('node-fetch');
+//import {fetch} from '../node-fetch';
 
 export class UsuarioController {
   constructor(
     @repository(UsuarioRepository)
-    public usuarioRepository : UsuarioRepository,
-  ) {}
+    public usuarioRepository: UsuarioRepository,
+    @service(AutenticacionService)
+    public servicioAutenticacion: AutenticacionService
+  ) { }
+
+  // NUEVO MEtodo IDENTIFICAR USUARIO
+  // Sera un metodo POST que va a apuntar
+  @post("/identificarPersona", {
+    responses: {
+      '200': {
+        description: "Identificacion de usuarios"
+      }
+    }
+  })
+  // Será recibida por esta funcion Asincrona llamada"identificarPersona"
+  // y debemos recibir un "requestbody" con un Usuario y Clave
+  // como el Modelo "Credenciales" aun no existe, lo creamos con "lb4 model" de tipo "model"
+  async identificarPersona(
+    @requestBody() credenciales: Credenciales
+  ) {
+    // Ahora debo identificar el usuario que quiere accesar el sistema.
+    let u = await this.servicioAutenticacion.IdentificarUsuario(credenciales.usuario, credenciales.clave)
+    if (u) {
+      let token = this.servicioAutenticacion.GenerarTokenJWT(u);
+      return {
+        datos: {
+          nombre: u.nombres,
+          correo: u.correo,
+          id: u.id
+
+        },
+        tk: token
+      }
+    } else {
+      throw new HttpErrors[401]("Los Datos son invalidos")
+    }
+  }
+
 
   @post('/usuarios')
   @response(200, {
@@ -44,7 +79,31 @@ export class UsuarioController {
     })
     usuario: Omit<Usuario, 'id'>,
   ): Promise<Usuario> {
-    return this.usuarioRepository.create(usuario);
+
+    // Utilizaremos el servicio de Autenticacion para generar una clave
+    let clave = this.servicioAutenticacion.GenerarClave();
+    // Ahora Ciframos la clave generada
+    let claveCifrada = this.servicioAutenticacion.CifrarClave(clave);
+    // Al registro del Usuario que nos llega le debemos asignar esa ClaveCifrada,
+    // para que sea almacenada en la Base de Datos.
+    usuario.clave = claveCifrada;
+    let u = await this.usuarioRepository.create(usuario);
+
+    // NOTIFICAR al Usuario
+    // La invocamos con la URL del Servicio de Phyton de Spider
+    // que es "/envio-correo" con sus 3 paramtros
+    let destino = usuario.correo;
+    let asunto = 'Registro en la plataforma MascotaFeliz';
+    let contenido = `Hola ${usuario.nombres}, su nombre de usaurios es: ${usuario.correo} y su contraseña es: ${clave}`;
+    // PAra obtener la respuesta del "fetch" coloque el ".then"
+    // y recibo un "data" de tipo "any" (de cualquier tipo), y
+    // ejecuto un "consol.log" para darme cuenta si fue enviado o NO.
+    fetch(`${Llaves.urlServicioNotificaciones}/envio-correo?correo_destino=${destino}&asunto=${asunto}&contenido=${contenido}`)
+      .then((data: any) => {
+        console.log(data);
+      })
+    return u;
+
   }
 
   @get('/usuarios/count')
